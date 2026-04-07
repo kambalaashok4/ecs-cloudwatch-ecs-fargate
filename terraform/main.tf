@@ -201,7 +201,7 @@ resource "aws_ecs_cluster" "main" {
 
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = "enhanced"
   }
 
   tags = { Name = "${var.project_name}-cluster" }
@@ -252,7 +252,8 @@ resource "aws_ecs_service" "app" {
   name            = "${var.project_name}-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = var.desired_count
+  desired_count = 4
+  
   launch_type     = "FARGATE"
 
   network_configuration {
