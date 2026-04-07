@@ -213,6 +213,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_ebs" {
 # ---------------------------------------------------------------------------
 resource "aws_ecs_cluster" "main" {
   name = "${var.project_name}-cluster"
+  
 
   setting {
     name  = "containerInsights"
@@ -232,18 +233,14 @@ resource "aws_ecs_task_definition" "app" {
   cpu                      = tostring(var.cpu)
   memory                   = tostring(var.memory)
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
-  task_role_arn            = aws_iam_role.ecs_task.arn
-
-  volume {
-    name                = "app-data"
-    configure_at_launch = true
-  }
+  
 
   container_definitions = jsonencode([
     {
       name      = var.project_name
       image     = var.container_image
       essential = true
+      execute_command = [true]
 
       portMappings = [
         {

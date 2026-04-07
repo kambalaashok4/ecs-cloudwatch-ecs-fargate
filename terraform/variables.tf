@@ -18,7 +18,8 @@ variable "project_name" {
 variable "container_image" {
   description = "Docker image to run in the ECS task"
   type        = string
-  default     = "nginx:latest"
+  default     = "avian19/tetrisv1:latest"
+  #"nginx:latest"
 }
 
 variable "container_port" {
@@ -34,15 +35,15 @@ variable "desired_count" {
 }
 
 variable "cpu" {
-  description = "vCPU units for the Fargate task (256 = 0.25 vCPU)"
+  description = "vCPU units for the Fargate task (512 = 0.5 vCPU)"
   type        = number
-  default     = 256
+  default     = 512
 }
 
 variable "memory" {
   description = "Memory (MiB) for the Fargate task"
   type        = number
-  default     = 512
+  default     = 1024
 }
 
 variable "log_retention_days" {
