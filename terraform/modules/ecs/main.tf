@@ -32,6 +32,11 @@ resource "aws_ecs_task_definition" "app" {
   cpu                      = tostring(var.cpu)
   memory                   = tostring(var.memory)
   execution_role_arn       = var.task_execution_role_arn
+  volume {
+    name ="app-data"
+    configure_at_launch = true
+    
+  }
 
   container_definitions = jsonencode([
     {
@@ -97,7 +102,7 @@ resource "aws_ecs_service" "app" {
 
     managed_ebs_volume {
       role_arn         = var.task_role_arn
-      size_in_gib      = var.ebs_volume_size_gib
+      size_in_gb       = var.ebs_volume_size_gib
       volume_type      = var.ebs_volume_type
       file_system_type = "ext4"
       encrypted        = true

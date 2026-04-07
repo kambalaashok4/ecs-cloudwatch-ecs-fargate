@@ -19,8 +19,10 @@ module "ecs" {
   container_image          = var.container_image
   container_port           = var.container_port
   desired_count            = var.desired_count
-  cpu                      = var.cpu
-  memory                   = var.memory
+  cpu                      = 512
+  # var.cpu
+  memory                   = 1024
+  #var.memory
   log_retention_days       = var.log_retention_days
   task_execution_role_arn  = module.iam.task_execution_role_arn
   task_role_arn            = module.iam.task_role_arn
