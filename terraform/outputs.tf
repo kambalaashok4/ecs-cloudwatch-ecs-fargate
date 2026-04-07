@@ -17,3 +17,18 @@ output "ecs_service_name" {
   description = "Name of the ECS Fargate service"
   value       = aws_ecs_service.app.name
 }
+
+output "autoscaling_min_capacity" {
+  description = "Minimum number of ECS tasks (autoscaling lower bound)"
+  value       = aws_appautoscaling_target.ecs.min_capacity
+}
+
+output "autoscaling_max_capacity" {
+  description = "Maximum number of ECS tasks (autoscaling upper bound)"
+  value       = aws_appautoscaling_target.ecs.max_capacity
+}
+
+output "autoscaling_cpu_target" {
+  description = "Target CPU utilization (%) used by the autoscaling policy"
+  value       = var.autoscaling_cpu_target
+}

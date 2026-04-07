@@ -50,3 +50,21 @@ variable "log_retention_days" {
   type        = number
   default     = 7
 }
+
+variable "autoscaling_min_capacity" {
+  description = "Minimum number of ECS tasks when autoscaling"
+  type        = number
+  default     = 1
+}
+
+variable "autoscaling_max_capacity" {
+  description = "Maximum number of ECS tasks when autoscaling"
+  type        = number
+  default     = 4
+}
+
+variable "autoscaling_cpu_target" {
+  description = "Target average CPU utilization (%) that triggers scaling"
+  type        = number
+  default     = 60
+}
