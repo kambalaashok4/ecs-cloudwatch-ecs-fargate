@@ -69,3 +69,21 @@ variable "autoscaling_cpu_target" {
   type        = number
   default     = 60
 }
+
+variable "ebs_volume_size_gib" {
+  description = "Size (GiB) of the EBS volume attached to each ECS task"
+  type        = number
+  default     = 20
+}
+
+variable "ebs_volume_type" {
+  description = "EBS volume type (gp3 recommended for Fargate)"
+  type        = string
+  default     = "gp3"
+}
+
+variable "ebs_mount_path" {
+  description = "Container path where the EBS volume is mounted"
+  type        = string
+  default     = "/data"
+}

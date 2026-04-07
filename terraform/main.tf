@@ -194,6 +194,21 @@ resource "aws_iam_role_policy" "ecs_task_execution_extra" {
 }
 
 # ---------------------------------------------------------------------------
+# IAM — Task Role (needed for EBS managed volumes)
+# ---------------------------------------------------------------------------
+resource "aws_iam_role" "ecs_task" {
+  name               = "${var.project_name}-task-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume.json
+
+  tags = { Name = "${var.project_name}-task-role" }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_ebs" {
+  role       = aws_iam_role.ecs_task.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForVolumes"
+}
+
+# ---------------------------------------------------------------------------
 # ECS Cluster (Container Insights enabled)
 # ---------------------------------------------------------------------------
 resource "aws_ecs_cluster" "main" {
@@ -234,6 +249,14 @@ resource "aws_ecs_task_definition" "app" {
         }
       ]
 
+      mountPoints = [
+        {
+          sourceVolume  = "app-data"
+          containerPath = var.ebs_mount_path
+          readOnly      = false
+        }
+      ]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -252,12 +275,12 @@ resource "aws_ecs_task_definition" "app" {
 # ECS Service
 # ---------------------------------------------------------------------------
 resource "aws_ecs_service" "app" {
-  name            = "${var.project_name}-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.app.arn
-  desired_count = 1
-  
-  launch_type     = "FARGATE"
+  name             = "${var.project_name}-service"
+  cluster          = aws_ecs_cluster.main.id
+  task_definition  = aws_ecs_task_definition.app.arn
+  desired_count    = var.desired_count
+  launch_type      = "FARGATE"
+  platform_version = "1.4.0"
 
   network_configuration {
     subnets          = aws_subnet.public[*].id
@@ -271,9 +294,22 @@ resource "aws_ecs_service" "app" {
     container_port   = var.container_port
   }
 
+  volume_configuration {
+    name = "app-data"
+
+    managed_ebs_volume {
+      role_arn         = aws_iam_role.ecs_task.arn
+      size_in_gib      = var.ebs_volume_size_gib
+      volume_type      = var.ebs_volume_type
+      file_system_type = "ext4"
+      encrypted        = true
+    }
+  }
+
   depends_on = [
     aws_lb_listener.http,
     aws_iam_role_policy_attachment.ecs_task_execution_managed,
+    aws_iam_role_policy_attachment.ecs_task_ebs,
   ]
 
   tags = { Name = "${var.project_name}-service" }
