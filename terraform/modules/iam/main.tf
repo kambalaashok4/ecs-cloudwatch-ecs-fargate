@@ -12,10 +12,11 @@ data "aws_iam_policy_document" "ecs_task_assume" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
-      identifiers = ["ecs.amazonaws.com"]
+      identifiers = ["ecs.amazonaws.com","ebs.amazonaws.com","ecs-tasks.amazonaws.com"]
     }
   }
 }
+
 
 resource "aws_iam_role" "ecs_task_execution" {
   name               = "${var.project_name}-task-exec-role"
@@ -37,6 +38,10 @@ data "aws_iam_policy_document" "ecs_task_execution_extra" {
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:CreateVolume",
+      "ec2:CreateTags",
+      "ec2:DescribeVolumes"
     ]
     resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/ecs/${var.project_name}:*"]
   }
