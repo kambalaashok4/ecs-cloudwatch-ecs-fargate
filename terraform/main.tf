@@ -225,9 +225,7 @@ resource "aws_ecs_task_definition" "app" {
       name      = var.project_name
       image     = var.container_image
       essential = true
-      execute_command {
-        enable = true
-      }
+      execute_command = [true]
 
       portMappings = [
         {
