@@ -3,6 +3,11 @@ output "alb_dns_name" {
   value       = "http://${module.networking.alb_dns_name}"
 }
 
+output "alb_https_url" {
+  description = "HTTPS URL of the Application Load Balancer"
+  value       = "https://${module.networking.alb_dns_name}"
+}
+
 output "ecs_cluster_name" {
   description = "Name of the ECS cluster (Container Insights enabled)"
   value       = module.ecs.cluster_name
@@ -33,3 +38,17 @@ output "autoscaling_cpu_target" {
   value       = var.autoscaling_cpu_target
 }
 
+output "route53_zone_name" {
+  description = "Name of the randomly generated Route 53 hosted zone"
+  value       = module.networking.route53_zone_name
+}
+
+output "route53_zone_id" {
+  description = "ID of the Route 53 hosted zone"
+  value       = module.networking.route53_zone_id
+}
+
+output "acm_certificate_arn" {
+  description = "ARN of the ACM SSL certificate attached to the HTTPS listener"
+  value       = module.networking.acm_certificate_arn
+}
