@@ -1,8 +1,9 @@
 module "networking" {
   source = "./modules/networking"
 
-  project_name   = var.project_name
-  container_port = var.container_port
+  project_name     = var.project_name
+  container_port   = var.container_port
+  hosted_zone_name = var.hosted_zone_name
 }
 
 module "iam" {

@@ -6,21 +6,10 @@ data "aws_availability_zones" "available" {
 }
 
 # ---------------------------------------------------------------------------
-# Random suffix for the hosted zone name
-# ---------------------------------------------------------------------------
-resource "random_string" "zone_suffix" {
-  length  = 8
-  lower   = true
-  upper   = false
-  numeric = true
-  special = false
-}
-
-# ---------------------------------------------------------------------------
-# Route 53 Hosted Zone (randomly named private-style domain)
+# Route 53 Hosted Zone (name provided by the user)
 # ---------------------------------------------------------------------------
 resource "aws_route53_zone" "main" {
-  name = "${var.project_name}-${random_string.zone_suffix.result}.com"
+  name = var.hosted_zone_name
 
   tags = { Name = "${var.project_name}-zone" }
 }
