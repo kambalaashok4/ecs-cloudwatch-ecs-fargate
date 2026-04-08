@@ -43,7 +43,8 @@ data "aws_iam_policy_document" "ecs_task_execution_extra" {
       "ec2:CreateTags",
       "ec2:DescribeVolumes"
     ]
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/ecs/${var.project_name}:*"]
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/ecs/${var.project_name}:*",
+                 "arn:aws:ec2:${data.aws_region.current.name}::volume/*","${aws_iam_role.ecs_task_execution.arn}"]
   }
 }
 
