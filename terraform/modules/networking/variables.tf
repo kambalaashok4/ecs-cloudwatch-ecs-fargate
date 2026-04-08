@@ -8,9 +8,7 @@ variable "container_port" {
   type        = number
 }
 
-variable "certificate_arn" {
-  description = "ARN of the ACM certificate for HTTPS (optional)"
+variable "hosted_zone_name" {
+  description = "Domain name for the Route 53 hosted zone (e.g. example.com). Must be a domain you control so ACM DNS validation can succeed."
   type        = string
-  default     = ""
-  
 }

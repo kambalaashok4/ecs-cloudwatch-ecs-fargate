@@ -6,6 +6,56 @@ data "aws_availability_zones" "available" {
 }
 
 # ---------------------------------------------------------------------------
+# Route 53 Hosted Zone (name provided by the user)
+# ---------------------------------------------------------------------------
+resource "aws_route53_zone" "main" {
+  name = var.hosted_zone_name
+
+  tags = { Name = "${var.project_name}-zone" }
+}
+
+# ---------------------------------------------------------------------------
+# ACM Certificate (issued for the hosted zone domain)
+# ---------------------------------------------------------------------------
+resource "aws_acm_certificate" "main" {
+  domain_name       = aws_route53_zone.main.name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = { Name = "${var.project_name}-cert" }
+}
+
+# ---------------------------------------------------------------------------
+# DNS Validation Records in the hosted zone
+# ---------------------------------------------------------------------------
+resource "aws_route53_record" "cert_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.main.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      type   = dvo.resource_record_type
+      record = dvo.resource_record_value
+    }
+  }
+
+  zone_id = aws_route53_zone.main.zone_id
+  name    = each.value.name
+  type    = each.value.type
+  ttl     = 60
+  records = [each.value.record]
+}
+
+# ---------------------------------------------------------------------------
+# ACM Certificate Validation
+# ---------------------------------------------------------------------------
+resource "aws_acm_certificate_validation" "main" {
+  certificate_arn         = aws_acm_certificate.main.arn
+  validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
+}
+
+# ---------------------------------------------------------------------------
 # VPC
 # ---------------------------------------------------------------------------
 resource "aws_vpc" "main" {
@@ -142,8 +192,12 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app.arn
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
@@ -156,7 +210,6 @@ resource "aws_alb_listener" "https" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app.arn
   }
-  ssl_policy = "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
-  certificate_arn = var.certificate_arn
-  
+  ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
+  certificate_arn = aws_acm_certificate_validation.main.certificate_arn
 }

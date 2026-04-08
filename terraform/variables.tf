@@ -82,6 +82,11 @@ variable "ebs_volume_type" {
   default     = "gp3"
 }
 
+variable "hosted_zone_name" {
+  description = "Domain name for the Route 53 hosted zone (e.g. example.com). Must be a domain you control so ACM DNS validation can succeed."
+  type        = string
+}
+
 variable "ebs_mount_path" {
   description = "Container path where the EBS volume is mounted"
   type        = string

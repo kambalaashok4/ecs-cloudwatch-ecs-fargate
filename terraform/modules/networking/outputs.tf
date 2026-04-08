@@ -32,3 +32,23 @@ output "alb_listener_arn" {
   description = "ARN of the ALB HTTP listener"
   value       = aws_lb_listener.http.arn
 }
+
+output "alb_https_listener_arn" {
+  description = "ARN of the ALB HTTPS listener"
+  value       = aws_alb_listener.https.arn
+}
+
+output "route53_zone_id" {
+  description = "ID of the Route 53 hosted zone"
+  value       = aws_route53_zone.main.zone_id
+}
+
+output "route53_zone_name" {
+  description = "Name of the Route 53 hosted zone"
+  value       = aws_route53_zone.main.name
+}
+
+output "acm_certificate_arn" {
+  description = "ARN of the ACM SSL certificate"
+  value       = aws_acm_certificate_validation.main.certificate_arn
+}
