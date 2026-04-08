@@ -156,7 +156,7 @@ resource "aws_alb_listener" "https" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app.arn
   }
-  ssl_policy = "ELBSecurityPolicy-2016-08"
+  ssl_policy = "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
   certificate_arn = var.certificate_arn
   
 }
